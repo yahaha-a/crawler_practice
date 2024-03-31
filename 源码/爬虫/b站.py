@@ -115,8 +115,6 @@ class BilibiliCrawler:
                 if response.status_code == 200:
                     html = response.text
                     tree = etree.HTML(html)
-                    with open(r"C:\Users\30683\下载\output.html", "w", encoding="utf-8") as f:
-                        f.write(html)
 
                     video_data_list = [video_url]
                     video_span_list = (tree.xpath('//div[@class="video-info-detail-list video-info-detail-content"]')[0]
