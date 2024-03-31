@@ -5,7 +5,6 @@ import time
 import random
 import requests
 from lxml import etree
-from fake_useragent import UserAgent
 
 
 class BilibiliCrawler:
@@ -22,27 +21,28 @@ class BilibiliCrawler:
         self.data_error = 0
         self.aid_error = 0
         self.search_url = 'https://search.bilibili.com/all'
-        self.ua = UserAgent()
         self.headers = {
             # 可模拟登陆状态，获取更多数据
-            'Cookie': "b_nut=1659335005; i-wanna-go-back=-1; buvid_fp_plain=undefined; nostalgia_conf=-1; "
-                      "CURRENT_BLACKGAP=0; blackside_state=1; LIVE_BUVID=AUTO5216718948158257; hit-dyn-v2=1; "
-                      "CURRENT_PID=6cb2ac00-d7b3-11ed-838d-1f749b00cdda; FEED_LIVE_VERSION=V8; "
-                      "buvid3=AA596D3F-D88C-F47B-2284-B5B824A2BC3F38939infoc; "
-                      "_uuid=7CB101DA3-106E1-22C10-E33C-DC10A456BD310739507infoc; rpdid=|(ummJYll)l~0J'uY)R)kJ))); "
-                      "header_theme_version=CLOSE; "
-                      "buvid4=D9C5CB69-6784-B3FA-CB69-CC07C47AAA9909557-022080114-cWjckrPywYM%2ByymL4aTTew%3D%3D; "
-                      "hit-new-style-dyn=1; CURRENT_FNVAL=4048; is-2022-channel=1; "
-                      "fingerprint=da7b870ac23f8c83793cca33570e9e87; b_ut=5; CURRENT_QUALITY=80; home_feed_column=5; "
-                      "PVID=1; SESSDATA=e69c75f7%2C1702354380%2C4c3c3%2A61; "
-                      "bili_jct=c2e40bff681c9ebcb47a65646968a817; DedeUserID=399881629; "
-                      "DedeUserID__ckMd5=8ddbdd60dd865b1f; sid=8o18k8fc; buvid_fp=da7b870ac23f8c83793cca33570e9e87; "
-                      "bp_video_offset_399881629=807299018344366100; innersign=0; b_lsid=10C54E910B_188BE09BEEC; "
-                      "bsource=search_bing; browser_resolution=1536-318",
+            'Cookie': "i-wanna-go-back=-1; b_ut=7; enable_web_push=DISABLE; header_theme_version=CLOSE; "
+                      "buvid_fp_plain=undefined; LIVE_BUVID=AUTO8317006657783591; hit-dyn-v2=1; "
+                      "buvid3=C7AA4DF4-EBF7-395C-2996-7AB1BCD6241944429infoc; b_nut=1703669044; "
+                      "_uuid=1E66DA7A-C687-1027B-10B41-BCD885AA856943600infoc; rpdid=|(ummJYY|Rm~0J'u~|JYYm|RY; "
+                      "is-2022-channel=1; DedeUserID=399881629; DedeUserID__ckMd5=8ddbdd60dd865b1f; "
+                      "buvid4=13A500D1-9AA1-DB4A-3AA3-F967FF78DEAA86372-023112012-; _ga=GA1.1.2006564153.1706962237; "
+                      "_ga_HE7QWR90TV=GS1.1.1706962236.1.1.1706962361.0.0.0; CURRENT_FNVAL=4048; CURRENT_QUALITY=80; "
+                      "blackside_state=0; CURRENT_BLACKGAP=0; home_feed_column=5; browser_resolution=1528-790; "
+                      "fingerprint=217b51bbc0ec97e52b8dd325620a0301; FEED_LIVE_VERSION=V_WATCHLATER_PIP_WINDOW3; "
+                      "buvid_fp=217b51bbc0ec97e52b8dd325620a0301; PVID=1; "
+                      "bp_video_offset_399881629=913221797917229110; b_lsid=8CA6BEC8_18E941ADCE5; "
+                      "SESSDATA=690c5856%2C1727433776%2C9542d%2A31CjAuB1DQ"
+                      "-J0W8w5Ftzxw7c1jbefmp6J7FdfDFKPhZMha2dsLGghFbEG0IXcCMWFNBjESVnNzWjV2bU14Nk5tVWxsbnpqZ3F3"
+                      "ZFdlYnJmcWNMX0NIN1ptU3c2T3NzUEdrRVJvNUVSMjVDUzMtWEo2bElPQVZFUVEzTlRseDhUdUx4cjNXNjlJWUZ3IIEC; "
+                      "bili_jct=687222dc78f575819b223ff25be92bf9; sid=gsaq2644; arrange=matrix",
+
             # 防止盗链 指示来源网站
             'Referer': 'https://search.bilibili.com/all',
-            # 使用随机代理
-            'User-Agent': self.ua.random
+
+            'User-Agent': 'Mozilla/5.0 (MSIE 10.0; Windows NT 6.1; Trident/5.0)'
         }
 
     def crawler(self):
@@ -65,8 +65,6 @@ class BilibiliCrawler:
     def get_video_url(self):
         for i in range(1, 51):
             print(f'第{i}页')
-
-            self.headers['User-Agent'] = self.ua.random
 
             if i == 1:
                 params = {
@@ -103,7 +101,7 @@ class BilibiliCrawler:
 
                 time.sleep(random.uniform(1, 2))
                 # TODO:测试
-                # break
+                break
             else:
                 print('请求被拒绝')
                 break
@@ -113,36 +111,36 @@ class BilibiliCrawler:
     def get_video_data(self):
         for video_name, video_url in self.video_dic.items():
             try:
-                self.headers['User-Agent'] = self.ua.random
                 response = requests.get(url=video_url, headers=self.headers)
                 if response.status_code == 200:
                     html = response.text
                     tree = etree.HTML(html)
+                    with open(r"C:\Users\30683\下载\output.html", "w", encoding="utf-8") as f:
+                        f.write(html)
 
                     video_data_list = [video_url]
-                    video_span_list = tree.xpath('//div[@class="video-data-list"]')[0].xpath('./span')
+                    video_span_list = (tree.xpath('//div[@class="video-info-detail-list video-info-detail-content"]')[0]
+                                       .xpath('./div'))
                     # 总播放数
-                    plays_number = {
-                        video_span_list[0].xpath('./@title')[0][0:4]: video_span_list[0].xpath('./@title')[0][4:]}
+                    plays_number = {"总播放数": video_span_list[0].xpath('./div[@class="view-text"]/text()')[0]}
                     video_data_list.append(plays_number)
                     # 历史累计弹幕数
-                    cumulative_number = {
-                        video_span_list[1].xpath('./@title')[0][0:7]: video_span_list[1].xpath('./@title')[0][7:]}
+                    cumulative_number = {"历史累计弹幕数": video_span_list[1].xpath('./div[@class="dm-text"]/text()')[0]}
                     video_data_list.append(cumulative_number)
                     # 上传时间
-                    upload_time = {'上传时间': video_span_list[2].xpath('./span/@title')[0]}
+                    upload_time = {"上传时间": video_span_list[2].xpath('./div[@class="pubdate-ip-text"]/text()')[0]}
                     video_data_list.append(upload_time)
 
-                    video_toolbar_left = tree.xpath('//div[@class="video-toolbar-left"]')[0].xpath('./div')
+                    video_toolbar_left = tree.xpath('//div[@class="video-toolbar-left-main"]')[0].xpath('./div')
                     # 点赞，投币，转发
                     for video_toolbar in video_toolbar_left[0:3]:
                         toolbar = {
-                            video_toolbar.xpath('./div/@title')[0][0:2]: video_toolbar.xpath('./div/span/text()')[0]}
+                            video_toolbar.xpath('./div')[0].get('title')[0:2] + "数": video_toolbar.xpath('./div/span/text()')[0]}
                         video_data_list.append(toolbar)
-                    video_transpond = {'转发': video_toolbar_left[3].xpath('.//text()')[0]}
+                    video_transpond = {'转发数': video_toolbar_left[3].xpath('.//text()')[0]}
                     video_data_list.append(video_transpond)
 
-                    tag_list = tree.xpath('//ul[@class="tag-area clearfix"]')[0].xpath('./li')
+                    tag_list = tree.xpath('//div[@class="tag-panel"]')[0].xpath('./div')
                     tag = []
                     # 标签
                     for li in tag_list:
@@ -167,7 +165,6 @@ class BilibiliCrawler:
     def get_aid(self):
         for video_name, video_url in self.video_dic.items():
             try:
-                self.headers['User-Agent'] = self.ua.random
                 # 传递查询参数
                 params = {
                     # 标识请求来源
@@ -198,7 +195,7 @@ class BilibiliCrawler:
             for video_name, aid in self.aid_dic.items():
                 self.comment_error += self.get_comments_for_video(video_name, aid, fp)
                 # TODO:测试
-                # break
+                break
         print(f"共获取{self.sum_comment}条评论, 共丢失{self.comment_error}个评论数据包")
 
     # 获取视频评论
@@ -218,7 +215,6 @@ class BilibiliCrawler:
 
         n = 1
         while True:
-            self.headers['User-Agent'] = self.ua.random
 
             # 评论api_url，n是数据包的编号，根据规律改变 aid 和 n 构造url
             api_url = f'https://api.bilibili.com/x/v2/reply/main?csrf=b4556cda615f29d225bbd111d28439cf&mode=3&oid={aid}' \
@@ -352,7 +348,7 @@ class BilibiliCrawler:
 
 def main():
     # 搜索关键词
-    user_list = ['高考', '考研', '考公', '就业']
+    user_list = ['永雏塔菲']
     for user in user_list:
         crawler = BilibiliCrawler(user)
         crawler.crawler()
